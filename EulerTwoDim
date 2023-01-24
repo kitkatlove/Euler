@@ -1,0 +1,86 @@
+# Import statements
+import math
+import csv
+# Function Definitions ------------------
+# read from file
+def readFromFile(filename):
+    dataFromFile = []
+    with open(filename) as file:
+        data = csv.reader(file)
+        for row in data:
+            dataFromFile.append(row)
+    return dataFromFile
+# convert data
+def convertData(stringTable):
+    floatTable = []
+    for row in stringTable:
+        floatList = []
+        for data in row:
+            floatList.append(float(data))
+        floatTable.append(floatList)
+    return floatTable
+"""
+eulerTwoDim() Uses Euler's method to calculate the
+velocity, position and acceleration of an object
+traveling in two dimensions.
+
+Input arglist elements:
+dt      time step (s)
+stop    Sim stop time (s)
+x, y    initial position (m, m)
+angle   initial angle (degrees)
+v		initial Velocity (m/s)
+m       mass of object (kg)
+b       drag coefficient
+
+returns array of: time_step, x_position and y_position
+for each time step in the simulation
+"""
+#def eulerTwoDim(argList):
+def eulerTwoDim(argList):
+  dataTable = []
+  dt, stop, x, y, angle, v, m, b = argList
+  time = 0
+  gravity=-9.8
+  vx = v*math.cos(math.radians(angle))
+  vy = v*math.sin(math.radians(angle))
+  #x acceleration
+  ax = 0-(b/m)*vx
+  #y acceleration
+  ay = gravity-(b/m)*vy
+  result=[time,x,y]
+  dataTable.append(result)
+  #print(result)
+  while time<stop:
+    time=time+dt
+    x = x+(vx*dt)
+    vx = vx+(ax*dt)
+    ax = 0-(b/m)*vx
+    y = y+vy*dt
+    vy = vy+(ay*dt)
+    ay = gravity-(b/m)*vy
+    result=[time,x,y]
+    dataTable.append(result)
+  return dataTable
+"""
+displayTable() format and display euler data
+"""
+def displayTable(table):
+    print("Time\tX Position\tY Position")
+    for step in table:
+        print("{0:5.2f} {1:10.2f} {2:10.2f}".format(step[0], step[1], step[2]))
+
+"""
+Main Code 
+First test your function with one set of arguments
+Then see main code in slides to run multiple simulations
+Update comments before submitting
+"""
+dataFromFile = readFromFile("TwoDimSimArgs.csv")
+floatData = []
+modelValues = convertData(dataFromFile)
+
+for x in range(len(modelValues)):
+  data = eulerTwoDim(modelValues[x])
+  print("\nSimulation with initial angle = ", modelValues[x][4], "\n")
+  displayTable(data)
